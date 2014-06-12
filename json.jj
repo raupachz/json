@@ -45,6 +45,7 @@ TOKEN :
     | <COMMA: ",">
     | <TRUE: "true">
     | <FALSE: "false">
+    | <NULL: "null">
     | <STRING: "\"" (~["\""])* "\"">
 }
 
@@ -78,8 +79,9 @@ Object value() :
     Object value;
 }
 {
-    (  value = bool()
-    |  value = string()
+    ( value = nil() 
+    | value = bool()
+    | value = string()
     )
     { return value; }
 }
@@ -102,4 +104,12 @@ Boolean bool() :
     | <FALSE>
       { return Boolean.FALSE; }
     )
+}
+
+Object nil() :
+{
+}
+{
+    <NULL>
+    { return null; }
 }
