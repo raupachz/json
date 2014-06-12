@@ -1,0 +1,72 @@
+options {
+    STATIC = false;
+    SUPPORT_CLASS_VISIBILITY_PUBLIC = false;
+}
+
+PARSER_BEGIN(JSON)
+
+import java.io.StringReader;
+import java.io.Reader;
+import java.util.Map;
+import java.util.Arrays;
+import java.util.HashMap;
+
+public class JSON {
+
+    private final Map<String,String> _map = new HashMap<String,String>();
+
+    public static void main(String args[]) {
+        try
+        {
+              JSON json = new JSON(System.in);
+              Map<String,String> map = json.parseObject();
+			  System.out.println(Arrays.toString(map.entrySet().toArray()));
+        } catch(Exception e) {
+              e.printStackTrace();
+        }
+    }
+}
+
+PARSER_END(JSON)
+
+SKIP :
+{
+      " " 
+    | "\t" 
+    | "\r" 
+    | "\n"
+}
+
+TOKEN :
+{
+      <LBRACE: "{">
+    | <RBRACE: "}">
+    | <COLON: ":">
+    | <COMMA: ",">
+    | <STRING: "\"" (~["\""])* "\"">
+}
+
+Map<String,String> parseObject() :
+{
+}
+{
+    object() <EOF>
+	{ return _map; }
+}
+
+void object() :
+{
+}
+{
+    <LBRACE> [ member() ( <COMMA> member() )*  ] <RBRACE>
+}
+
+void member() :
+{
+    Token key;
+    Token value;
+}
+{
+    key = <STRING> <COLON> value = <STRING>
+    { _map.put(key.image, value.image); } 
+}
