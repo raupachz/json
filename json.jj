@@ -13,13 +13,13 @@ import java.util.HashMap;
 
 public class JSON {
 
-    private final Map<String,String> _map = new HashMap<String,String>();
+    private final Map<String,Object> _map = new HashMap<String,Object>();
 
     public static void main(String args[]) {
         try
         {
               JSON json = new JSON(System.in);
-              Map<String,String> map = json.parseObject();
+              Map<String,Object> map = json.parseObject();
 			  System.out.println(Arrays.toString(map.entrySet().toArray()));
         } catch(Exception e) {
               e.printStackTrace();
@@ -43,10 +43,12 @@ TOKEN :
     | <RBRACE: "}">
     | <COLON: ":">
     | <COMMA: ",">
+    | <TRUE: "true">
+    | <FALSE: "false">
     | <STRING: "\"" (~["\""])* "\"">
 }
 
-Map<String,String> parseObject() :
+Map<String,Object> parseObject() :
 {
 }
 {
@@ -64,9 +66,40 @@ void object() :
 void member() :
 {
     Token key;
-    Token value;
+    Object value;
 }
 {
-    key = <STRING> <COLON> value = <STRING>
-    { _map.put(key.image, value.image); } 
+    key = <STRING> <COLON> value = value()
+    { _map.put(key.image, value); } 
+}
+
+Object value() :
+{
+    Object value;
+}
+{
+    (  value = bool()
+    |  value = string()
+    )
+    { return value; }
+}
+
+String string() :
+{
+    Token t;
+}
+{
+    t = <STRING>
+    { return t.image; }
+}
+
+Boolean bool() :
+{
+}
+{
+    ( <TRUE> 
+      { return Boolean.TRUE; }
+    | <FALSE>
+      { return Boolean.FALSE; }
+    )
 }
