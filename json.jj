@@ -13,8 +13,6 @@ import java.util.HashMap;
 
 public class JSON {
 
-    private final Map<String,Object> _map = new HashMap<String,Object>();
-
     public static void main(String args[]) {
         try
         {
@@ -52,27 +50,30 @@ TOKEN :
 
 Map<String,Object> parseObject() :
 {
+    Map<String,Object> obj;
 }
 {
-    object() <EOF>
-	{ return _map; }
+    obj = object() <EOF>
+	{ return obj; }
 }
 
-void object() :
+Map<String,Object> object() :
 {
+    Map<String,Object> obj = new HashMap<String,Object>();
 }
 {
-    <LBRACE> [ member() ( <COMMA> member() )*  ] <RBRACE>
+    <LBRACE> [ member(obj) ( <COMMA> member(obj) )*  ] <RBRACE>
+    { return obj; }
 }
 
-void member() :
+void member(Map<String,Object> obj) :
 {
     Token key;
     Object value;
 }
 {
     key = <STRING> <COLON> value = value()
-    { _map.put(key.image, value); } 
+    { obj.put(key.image, value); } 
 }
 
 Object value() :
@@ -84,6 +85,7 @@ Object value() :
     | value = bool()
     | value = number()
     | value = string()
+    | value = object() 
     )
     { return value; }
 }
