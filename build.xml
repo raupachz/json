@@ -14,14 +14,14 @@
                 javacchome="${env.JAVACC_HOME}" />
     </target>
 
-    <target name="compile">
+    <target name="compile" depends="javacc">
         <mkdir dir="classes" />
         <javac includeantruntime="false" 
                srcdir="src" 
                destdir="classes"/>
     </target>
 
-    <target name="run">
+    <target name="run" depends="compile">
         <java classname="JSON">
             <classpath>
                 <pathelement path="classes"/>
