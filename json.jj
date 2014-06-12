@@ -46,6 +46,7 @@ TOKEN :
     | <TRUE: "true">
     | <FALSE: "false">
     | <NULL: "null">
+    | <NUMBER: (["0"-"9"])+>
     | <STRING: "\"" (~["\""])* "\"">
 }
 
@@ -81,6 +82,7 @@ Object value() :
 {
     ( value = nil() 
     | value = bool()
+    | value = number()
     | value = string()
     )
     { return value; }
@@ -112,4 +114,13 @@ Object nil() :
 {
     <NULL>
     { return null; }
+}
+
+Number number() :
+{
+    Token t;
+}
+{
+    t = <NUMBER>
+    { return Integer.valueOf(t.image); }
 }
