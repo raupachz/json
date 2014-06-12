@@ -8,8 +8,10 @@ PARSER_BEGIN(JSON)
 import java.io.StringReader;
 import java.io.Reader;
 import java.util.Map;
+import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class JSON {
 
@@ -17,8 +19,8 @@ public class JSON {
         try
         {
               JSON json = new JSON(System.in);
-              Map<String,Object> map = json.parseObject();
-			  System.out.println(Arrays.toString(map.entrySet().toArray()));
+              Object obj = json.parse();
+			  System.out.println(obj);
         } catch(Exception e) {
               e.printStackTrace();
         }
@@ -31,6 +33,7 @@ SKIP :
 {
       " " 
     | "\t" 
+    | "\f"
     | "\r" 
     | "\n"
 }
@@ -39,6 +42,8 @@ TOKEN :
 {
       <LBRACE: "{">
     | <RBRACE: "}">
+    | <LBRACKET: "[">
+    | <RBRACKET: "]">
     | <COLON: ":">
     | <COMMA: ",">
     | <TRUE: "true">
@@ -48,13 +53,16 @@ TOKEN :
     | <STRING: "\"" (~["\""])* "\"">
 }
 
-Map<String,Object> parseObject() :
+Object parse() :
 {
-    Map<String,Object> obj;
+    Object o;
 }
 {
-    obj = object() <EOF>
-	{ return obj; }
+    ( o = object()
+    | o = array()
+    )
+    <EOF>
+	{ return o; }
 }
 
 Map<String,Object> object() :
@@ -64,6 +72,16 @@ Map<String,Object> object() :
 {
     <LBRACE> [ member(obj) ( <COMMA> member(obj) )*  ] <RBRACE>
     { return obj; }
+}
+
+List<Object> array() :
+{
+    List<Object> arr = new ArrayList<Object>();
+    Object v;
+}
+{
+    <LBRACKET> [ v = value() { arr.add(v); }  ( <COMMA> v = value() { arr.add(v); } )*  ] <RBRACKET>
+    { return arr; }
 }
 
 void member(Map<String,Object> obj) :
@@ -86,6 +104,7 @@ Object value() :
     | value = number()
     | value = string()
     | value = object() 
+    | value = array()
     )
     { return value; }
 }
