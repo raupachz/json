@@ -91,7 +91,7 @@ void member(Map<String,Object> obj) :
 }
 {
     key = <STRING> <COLON> value = value()
-    { obj.put(key.image, value); } 
+    { obj.put(key.image.substring(1, key.image.length() - 1), value); } 
 }
 
 Object value() :
@@ -115,7 +115,7 @@ String string() :
 }
 {
     t = <STRING>
-    { return t.image; }
+    { return t.image.substring(1, t.image.length() - 1); }
 }
 
 Boolean bool() :
